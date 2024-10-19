@@ -6,8 +6,8 @@ RUN useradd -d /home/ctng -m -g $CTNG_GID -u $CTNG_UID -s /bin/bash ctng
 
 # use mirror
 RUN sed -i \
-    -e 's%archive.ubuntu.com%mirrors.aliyun.com%g' \
-    -e 's%security.ubuntu.com%mirrors.aliyun.com%g' \
+    -e 's%archive.ubuntu.com%mirrors.cloud.tencent.com%g' \
+    -e 's%security.ubuntu.com%mirrors.cloud.tencent.com%g' \
     /etc/apt/sources.list
 
 # Non-interactive configuration of tzdata
