@@ -167,6 +167,11 @@ do_binutils_backend() {
         extra_config+=("--disable-multilib")
     fi
 
+    # gprofng is unavailable for non-glibc build/hosts
+    if [ "${CT_BINUTILS_GPROFNG}" != "y" ]; then
+        extra_config+=("--disable-gprofng")
+    fi
+
     # Disable gdb when building from the binutils-gdb repository.
     extra_config+=("--disable-sim")
     extra_config+=("--disable-gdb")
@@ -182,9 +187,15 @@ do_binutils_backend() {
         extra_config+=("--without-zstd")
     fi
 
-    # Disable usage of glob for higher compatibility.
-    # Not strictly needed for anything but GDB anyways.
-    export ac_cv_func_glob=no
+    # gold links with CXXLINK/g++, not libtool, and does not understand
+    # -all-static
+    if [ "${static_build}" = "y" ]; then
+        case "${CT_BINUTILS_LINKERS_LIST}" in
+            *gold*)
+                extra_config+=("--with-gold-ldflags=--static")
+                ;;
+        esac
+    fi
 
     CT_DoLog DEBUG "Extra config passed: '${extra_config[*]}'"
 
@@ -215,6 +226,13 @@ do_binutils_backend() {
     fi
 
     CT_DoLog EXTRA "Building binutils"
+    if [ "${static_build}" = "y" ]; then
+        case "${CT_BINUTILS_LINKERS_LIST}" in
+            *gold*)
+                CT_DoExecLog ALL make -C gold ${CT_JOBSFLAGS}
+                ;;
+        esac
+    fi
     CT_DoExecLog ALL make "${extra_make_flags[@]}" ${CT_JOBSFLAGS}
 
     CT_DoLog EXTRA "Installing binutils"
@@ -295,7 +313,7 @@ do_elf2flt_backend() {
         --prefix=${prefix}                                      \
         --with-bfd-include-dir=${binutils_bld}/bfd              \
         --with-binutils-include-dir=${binutils_src}/include     \
-        --with-libbfd=${binutils_bld}/bfd/libbfd.a              \
+        --with-libbfd=${binutils_bld}/bfd/.libs/libbfd.a        \
         --with-libiberty=${binutils_bld}/libiberty/libiberty.a  \
         --disable-werror                                        \
         ${elf2flt_opts}                                         \

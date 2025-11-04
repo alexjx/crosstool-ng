@@ -182,6 +182,10 @@ glibc_backend_once()
     # or even after they get installed...
     echo "ac_cv_path_BASH_SHELL=/bin/bash" >>config.cache
 
+    if [ "${CT_GLIBC_MAKEINFO_WORKAROUND}" = "y" ]; then
+        echo "ac_cv_prog_MAKEINFO=" >>config.cache
+    fi
+
     CT_SymlinkToolsMultilib
 
     # Configure with --prefix the way we want it on the target...
@@ -249,8 +253,8 @@ glibc_backend_once()
             build_cppflags="${build_cppflags} -I${CT_BUILDTOOLS_PREFIX_DIR}/include/"
             build_ldflags="${build_ldflags} -lintl -liconv"
             case "$CT_BUILD" in
-                *cygwin*|*freebsd*)
-                # Additionally, stat in FreeBSD, Cygwin, and possibly others
+                *cygwin*|*freebsd*|aarch64*darwin*)
+                # Additionally, stat in FreeBSD, Cygwin, Darwin arm64 and possibly others
                 # is always 64bit, so replace struct stat64 with stat.
                 build_cppflags="${build_cppflags} -Dstat64=stat"
                 ;;
