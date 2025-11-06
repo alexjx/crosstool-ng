@@ -1,0 +1,14 @@
+--- glibc/Makerules   2010-07-27 11:34:39.000000000 +0000
++++ glibc/Makerules~  2025-11-06 03:25:53.169089526 +0000
+@@ -1235,11 +1235,7 @@
+ endif
+
+ ifeq ($(firstword $(sysd-sorted-done) f)$(firstword $(generating) f),tf)
+--include $(common-objpfx)tls.make
+-config-tls := tls
+-ifeq ($(use-thread),yes)
+ config-tls := thread
+-endif
+ check-abi-config := \
+   $(config-machine)-$(config-vendor)-$(config-os)/$(config-tls)
+ endif
