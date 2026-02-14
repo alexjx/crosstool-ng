@@ -1,11 +1,10 @@
---- csu/Makefile        2010-07-27 11:34:39.000000000 +0000
-+++ csu/Makefile~       2025-11-06 06:44:47.481142684 +0000
-@@ -135,7 +135,7 @@
- subdir_lib: $(extra-objs:%=$(objpfx)%)
+--- a/csu/Makefile
++++ b/csu/Makefile
+@@ -137,7 +137,7 @@ subdir_lib: $(extra-objs:%=$(objpfx)%)
 
  define link-relocatable
 -$(CC) -nostdlib -nostartfiles -r -o $@ $^
-+$(CC) -nostdlib -nostartfiles -pie -Wl,-pie -fPIE -fPIC -o $@ $^
++$(CC) -nostdlib -nostartfiles -r -fPIC -o $@ $^
  endef
 
  ifndef start-installed-name-rule
